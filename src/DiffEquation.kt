@@ -1,3 +1,5 @@
+package org.sample
+
 import java.io.IOException
 import java.util.*
 import kotlin.math.pow
