@@ -1,9 +1,23 @@
 package org.sample
 
+import org.jfree.chart.ChartFactory
+import org.jfree.chart.ChartPanel
+import org.jfree.chart.JFreeChart
+import org.jfree.chart.plot.XYPlot
+import org.jfree.chart.ui.ApplicationFrame
+import org.jfree.data.xy.XYDataset
+import org.jfree.data.xy.XYSeries
+import org.jfree.data.xy.XYSeriesCollection
+import org.jfree.ui.RefineryUtilities
+import java.awt.Color
+import java.awt.Dimension
 import java.io.IOException
 import java.util.*
+import javax.swing.JFrame
+import javax.swing.WindowConstants
 import kotlin.math.pow
 import kotlin.math.sqrt
+
 
 /**
  * Класс предназначенный для решения простых дифференциальных уравнений четырьмя методами
@@ -12,7 +26,7 @@ import kotlin.math.sqrt
  * @property f Экземпляр класса Formula, предназначенного для вычисления формулы
  */
 
-class DiffEquation(formula: String) {
+class DiffEquation(val formula: String) {
 
     private var f: Formula = Formula(formula)
 
@@ -134,6 +148,26 @@ class DiffEquation(formula: String) {
             resultXY = resultXY + Pair( x[i], y[i] )
         }
         return resultXY
+    }
+
+    fun showThirdOrderRungeKuttaMethod (a: Double, b: Double, h: Double, y0: Double) {
+        val result = thirdOrderRungeKuttaMethod(a, b, h, y0)
+        val graph = ScatterPlot("График функции", result, "Метод Рунге-Кутта третьего порядка", formula)
+    }
+
+    fun showFourthOrderRungeKuttaMethod (a: Double, b: Double, h: Double, y0: Double) {
+        val result = fourthOrderRungeKuttaMethod(a, b, h, y0)
+        val graph = ScatterPlot("", result, "Метод Рунге-Кутта четвертого порядка", formula)
+    }
+
+    fun showEulerMethod (a: Double, b: Double, h: Double, y0: Double) {
+        val result = eulerMethod(a, b, h, y0)
+        val graph = ScatterPlot("", result, "Простой метод Эйлера", formula)
+    }
+
+    fun showImprovedEulerMethod (a: Double, b: Double, h: Double, y0: Double) {
+        val result = improvedEulerMethod(a, b, h, y0)
+        val graph = ScatterPlot("", result, "Усовершенствованный метод Эйлера", formula)
     }
 
     /**
@@ -327,6 +361,43 @@ class DiffEquation(formula: String) {
                 }
                 return postfix
             }
+        }
+    }
+
+    private class ScatterPlot(title: String?, val data: Map<Double, Double>, val method: String, val f: String) : JFrame(title) {
+        private fun createDataset(): XYDataset {
+            val dataset = XYSeriesCollection()
+
+            //Boys (Age,weight) series
+            val graph = XYSeries(f)
+            for (i in data) {
+                graph.add(i.key, i.value)
+            }
+            dataset.addSeries(graph)
+
+            return dataset
+        }
+
+        init {
+
+            // Create dataset
+            val dataset: XYDataset = createDataset()
+
+            // Create chart
+            val chart: JFreeChart = ChartFactory.createXYLineChart(
+                    method,
+                    "X-Axis", "Y-Axis", dataset)
+
+            val plot = chart.plot as XYPlot
+            plot.backgroundPaint = Color(255, 228, 196)
+
+            val panel = ChartPanel(chart)
+            contentPane = panel
+
+            this.setSize(1000, 500)
+            this.setLocationRelativeTo(null)
+            this.defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
+            this.isVisible = true
         }
     }
 }

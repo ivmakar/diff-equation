@@ -4,9 +4,14 @@ import java.util.*
 
 fun main() {
 
-    val equation = DiffEquation("y-x")
+    val equation = DiffEquation("y-x^2")
 
-    val a = 0.0
+    equation.showImprovedEulerMethod(0.0,10.0,0.1,1.0)
+    equation.showEulerMethod(0.0,10.0,0.1,1.0)
+    equation.showThirdOrderRungeKuttaMethod(0.0,10.0,0.1,1.0)
+    equation.showFourthOrderRungeKuttaMethod(0.0,10.0,0.1,1.0)
+
+    /*val a = 0.0
     val b = 10.0
 
     var num = "Точек "
@@ -72,5 +77,5 @@ fun main() {
         time += if ((endTime.time - startTime.time).toString().length > 3) "\t${endTime.time - startTime.time}" else "\t${endTime.time - startTime.time}\t"
     }
     println(num)
-    println(time)
+    println(time)*/
 }
