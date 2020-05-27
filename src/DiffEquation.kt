@@ -3,8 +3,10 @@ package org.sample
 import org.jfree.chart.ChartFactory
 import org.jfree.chart.ChartPanel
 import org.jfree.chart.JFreeChart
+import org.jfree.chart.plot.PlotOrientation
 import org.jfree.chart.plot.XYPlot
 import org.jfree.chart.ui.ApplicationFrame
+import org.jfree.data.category.DefaultCategoryDataset
 import org.jfree.data.xy.XYDataset
 import org.jfree.data.xy.XYSeries
 import org.jfree.data.xy.XYSeriesCollection
@@ -15,6 +17,7 @@ import java.io.IOException
 import java.util.*
 import javax.swing.JFrame
 import javax.swing.WindowConstants
+import kotlin.math.exp
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -150,24 +153,24 @@ class DiffEquation(val formula: String) {
         return resultXY
     }
 
-    fun showThirdOrderRungeKuttaMethod (a: Double, b: Double, h: Double, y0: Double) {
+    fun showThirdOrderRungeKuttaMethod (a: Double, b: Double, h: Double, y0: Double, solution: String? = null) {
         val result = thirdOrderRungeKuttaMethod(a, b, h, y0)
-        val graph = ScatterPlot("График функции", result, "Метод Рунге-Кутта третьего порядка", formula)
+        ScatterPlot("График функции", result, "Метод Рунге-Кутта третьего порядка", formula, solution).showWindow()
     }
 
-    fun showFourthOrderRungeKuttaMethod (a: Double, b: Double, h: Double, y0: Double) {
+    fun showFourthOrderRungeKuttaMethod (a: Double, b: Double, h: Double, y0: Double, solution: String? = null) {
         val result = fourthOrderRungeKuttaMethod(a, b, h, y0)
-        val graph = ScatterPlot("", result, "Метод Рунге-Кутта четвертого порядка", formula)
+        ScatterPlot("", result, "Метод Рунге-Кутта четвертого порядка", formula, solution).showWindow()
     }
 
-    fun showEulerMethod (a: Double, b: Double, h: Double, y0: Double) {
+    fun showEulerMethod (a: Double, b: Double, h: Double, y0: Double, solution: String? = null) {
         val result = eulerMethod(a, b, h, y0)
-        val graph = ScatterPlot("", result, "Простой метод Эйлера", formula)
+        ScatterPlot("", result, "Простой метод Эйлера", formula, solution).showWindow()
     }
 
-    fun showImprovedEulerMethod (a: Double, b: Double, h: Double, y0: Double) {
+    fun showImprovedEulerMethod (a: Double, b: Double, h: Double, y0: Double, solution: String? = null) {
         val result = improvedEulerMethod(a, b, h, y0)
-        val graph = ScatterPlot("", result, "Усовершенствованный метод Эйлера", formula)
+        ScatterPlot("", result, "Усовершенствованный метод Эйлера", formula, solution).showWindow()
     }
 
     /**
@@ -226,6 +229,7 @@ class DiffEquation(val formula: String) {
             for (cur in postfix) {
                 when (cur) {
                     "sqrt" -> stack.push(sqrt(stack.pop()))
+                    "exp" -> stack.push(exp(stack.pop()))
                     "+" -> stack.push(stack.pop() + stack.pop())
                     "-" -> {
                         val b = stack.pop()
@@ -287,7 +291,7 @@ class DiffEquation(val formula: String) {
              * Проверка, является ли переданный токен функцией (sqrt)
              */
             private fun isFunction(token: String): Boolean {
-                return token in listOf("sqrt")
+                return token in listOf("sqrt", "exp")
             }
 
             /**
@@ -364,16 +368,25 @@ class DiffEquation(val formula: String) {
         }
     }
 
-    private class ScatterPlot(title: String?, val data: Map<Double, Double>, val method: String, val f: String) : JFrame(title) {
+    private class ScatterPlot(title: String?, val data: Map<Double, Double>, val method: String, val f: String, val solution: String? = null) : JFrame(title) {
         private fun createDataset(): XYDataset {
             val dataset = XYSeriesCollection()
 
             //Boys (Age,weight) series
-            val graph = XYSeries(f)
+            val graph = XYSeries("dy/dx = $f")
             for (i in data) {
                 graph.add(i.key, i.value)
             }
             dataset.addSeries(graph)
+
+            if (solution != null) {
+                val f = Formula(solution)
+                val gr = XYSeries("y = $solution")
+                for (i in data) {
+                    gr.add(i.key, f.f(i.key, 0.0))
+                }
+                dataset.addSeries(gr)
+            }
 
             return dataset
         }
@@ -386,14 +399,16 @@ class DiffEquation(val formula: String) {
             // Create chart
             val chart: JFreeChart = ChartFactory.createXYLineChart(
                     method,
-                    "X-Axis", "Y-Axis", dataset)
+                    "X-Axis",
+                    "Y-Axis",
+                    dataset)
 
-            val plot = chart.plot as XYPlot
-            plot.backgroundPaint = Color(255, 228, 196)
 
             val panel = ChartPanel(chart)
             contentPane = panel
+        }
 
+        fun showWindow() {
             this.setSize(1000, 500)
             this.setLocationRelativeTo(null)
             this.defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE

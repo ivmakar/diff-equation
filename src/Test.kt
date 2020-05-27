@@ -4,12 +4,19 @@ import java.util.*
 
 fun main() {
 
-    val equation = DiffEquation("y-x^2")
+    val equation = DiffEquation("2*y")
 
-    equation.showImprovedEulerMethod(0.0,10.0,0.1,1.0)
-    equation.showEulerMethod(0.0,10.0,0.1,1.0)
-    equation.showThirdOrderRungeKuttaMethod(0.0,10.0,0.1,1.0)
-    equation.showFourthOrderRungeKuttaMethod(0.0,10.0,0.1,1.0)
+    equation.showEulerMethod(0.0,10.0,0.1,1.0, "exp(2*x)+1")
+    equation.showImprovedEulerMethod(0.0,10.0,0.1,1.0, "exp(2*x)+1")
+    equation.showThirdOrderRungeKuttaMethod(0.0,10.0,0.1,1.0, "exp(2*x)+1")
+    equation.showFourthOrderRungeKuttaMethod(0.0,10.0,0.1,1.0, "exp(2*x)+1")
+
+//    equation.replaceFormula("1/y")
+//
+//    equation.showImprovedEulerMethod(0.0,10.0,1.0,1.0, "sqrt(2*x+1)")
+//    equation.showEulerMethod(0.0,10.0,1.0,1.0, "sqrt(2*x+1)")
+//    equation.showThirdOrderRungeKuttaMethod(0.0,10.0,1.0,1.0, "sqrt(2*x+1)")
+//    equation.showFourthOrderRungeKuttaMethod(0.0,10.0,1.0,1.0, "sqrt(2*x+1)")
 
     /*val a = 0.0
     val b = 10.0
