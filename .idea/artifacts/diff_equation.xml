@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="diff-equation">
+    <output-path>$PROJECT_DIR$/out/artifacts/diff_equation</output-path>
+    <root id="archive" name="diff-equation.jar" />
+  </artifact>
+</component>
